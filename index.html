@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculette Alpiq - Comparateur d'offres</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #f5f7fa;
+  color: #1e293b;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.header img.logo { height: 40px; object-fit: contain; }
+.header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+.header .subtitle {
+  width: 100%;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* ===== LAYOUT ===== */
+.container {
+  max-width: 720px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border: 1px solid #e8ecf1;
+}
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+/* ===== MODE SELECTOR ===== */
+.mode-selector {
+  display: flex;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #0d47a1;
+  margin-bottom: 1rem;
+}
+.mode-btn {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  border: none;
+  background: #fff;
+  color: #0d47a1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.mode-btn.active {
+  background: #0d47a1;
+  color: #fff;
+}
+.mode-btn:hover:not(.active) { background: #e3f2fd; }
+
+/* ===== BILLING TYPE ===== */
+.billing-selector {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid #94a3b8;
+  margin-bottom: 1rem;
+}
+.billing-btn {
+  flex: 1;
+  padding: 0.6rem 0.5rem;
+  border: none;
+  background: #fff;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.billing-btn.active {
+  background: #475569;
+  color: #fff;
+}
+.billing-btn:hover:not(.active) { background: #f1f5f9; }
+
+/* ===== FORM FIELDS ===== */
+.form-section {
+  margin-bottom: 0.8rem;
+}
+.form-section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.6rem;
+  margin-top: 0.5rem;
+}
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+.field-row.single { grid-template-columns: 1fr; }
+.field {
+  display: flex;
+  flex-direction: column;
+}
+.field label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+.field input {
+  padding: 0.65rem 0.75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  width: 100%;
+}
+.field input:focus {
+  outline: none;
+  border-color: #0d47a1;
+  box-shadow: 0 0 0 3px rgba(13,71,161,0.1);
+}
+.field input.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+}
+.field .hint {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+  font-style: italic;
+}
+.field .unit {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+}
+
+/* ===== CONSO PERIOD SELECTOR ===== */
+.conso-period {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.82rem;
+  color: #475569;
+}
+.conso-period select {
+  padding: 0.4rem 0.6rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* ===== BUTTONS ===== */
+.btn-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  min-width: 140px;
+  text-align: center;
+}
+.btn-primary {
+  background: #0d47a1;
+  color: #fff;
+}
+.btn-primary:hover { background: #1565c0; }
+.btn-secondary {
+  background: #e2e8f0;
+  color: #475569;
+}
+.btn-secondary:hover { background: #cbd5e1; }
+
+/* ===== ERROR MESSAGE ===== */
+.error-msg {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+.error-msg.visible { display: block; }
+
+/* ===== RESULTS ===== */
+.results {
+  display: none;
+}
+.results.visible { display: block; }
+
+.result-main {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+.result-main.savings {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid #a7f3d0;
+}
+.result-main.surcharge {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 1px solid #fecaca;
+}
+.result-main.neutral {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border: 1px solid #e2e8f0;
+}
+.result-percent {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+.result-main.savings .result-percent { color: #059669; }
+.result-main.surcharge .result-percent { color: #dc2626; }
+.result-main.neutral .result-percent { color: #64748b; }
+.result-summary {
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.result-euros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.euro-box {
+  text-align: center;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+.euro-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.euro-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+/* ===== DETAILS TABLE ===== */
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.details-table th, .details-table td {
+  padding: 0.55rem 0.8rem;
+  text-align: left;
+}
+.details-table thead th {
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 2px solid #e2e8f0;
+}
+.details-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+.details-table tbody td:first-child {
+  color: #475569;
+}
+
+/* ===== COMMERCIAL PHRASE ===== */
+.commercial-box {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  position: relative;
+}
+.commercial-box .label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1d4ed8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+}
+.commercial-box .phrase {
+  font-size: 0.92rem;
+  color: #1e293b;
+  line-height: 1.6;
+}
+
+/* ===== COPY BUTTONS ===== */
+.copy-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+.btn-copy {
+  padding: 0.5rem 1rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-copy:hover { background: #f1f5f9; border-color: #0d47a1; color: #0d47a1; }
+.btn-copy.copied {
+  background: #ecfdf5;
+  border-color: #059669;
+  color: #059669;
+}
+
+/* ===== DISCLAIMER ===== */
+.disclaimer {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  text-align: center;
+  padding: 0.8rem;
+  font-style: italic;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 0.5rem;
+}
+
+/* ===== METHOD NOTE ===== */
+.method-note {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid #e8ecf1;
+  line-height: 1.5;
+}
+.method-note strong { color: #64748b; }
+
+/* ===== HIDDEN ===== */
+.hidden { display: none !important; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .field-row { grid-template-columns: 1fr; }
+  .result-euros { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.1rem; }
+  .btn { min-width: 100px; font-size: 0.88rem; padding: 0.65rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyODAgNzAiPgogIDwhLS0gV2F2ZSBzaGFwZXMgLS0+CiAgPHBhdGggZD0iTTEwLDQ1IFEzMCwyMCA1MCwzNSBRNzAsNTAgOTAsMzAgUTExMCwxMCAxMzAsMzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNiYjhjOSIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTI1LDUwIFE0NSwyOCA2NSw0MCBRODUsNTUgMTA1LDMyIFExMjAsMTUgMTM1LDM1IiBmaWxsPSJub25lIiBzdHJva2U9IiMxYTRiNmUiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik04NSw0OCBRMTAwLDMwIDExNSwzOCBRMTI1LDIwIDEzOCwzNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTg3NjJiIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDwhLS0gVGV4dCAtLT4KICA8dGV4dCB4PSIxNTAiIHk9IjQ4IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1zaXplPSIzNiIgZmlsbD0iIzFhM2E1YyI+QWRhbWE8L3RleHQ+Cjwvc3ZnPgo=" alt="Adama" class="logo">
+  <span style="color:#cbd5e1; font-size:1.5rem; font-weight:300;">&times;</span>
+  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgNjAiPgogIDx0ZXh0IHg9IjUiIHk9IjQ4IiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2ssIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjUyIiBmaWxsPSIjZjU5ZTBiIiBsZXR0ZXItc3BhY2luZz0iMiI+QUxQSVE8L3RleHQ+Cjwvc3ZnPgo=" alt="Alpiq" class="logo">
+  <h1>Comparateur d'offres Alpiq</h1>
+  <p class="subtitle">Outil interne &mdash; Estimez rapidement les &eacute;conomies pour vos clients</p>
+</div>
+
+<div class="container">
+
+  <!-- ===== MODE SELECTION ===== -->
+  <div class="card">
+    <div class="card-title">Type d'offre</div>
+    <div class="mode-selector">
+      <button class="mode-btn active" onclick="setMode('base')" id="mode-base">Tarif Base</button>
+      <button class="mode-btn" onclick="setMode('hchp')" id="mode-hchp">Heures Creuses / Heures Pleines</button>
+    </div>
+    <div class="card-title" style="margin-top:0.5rem">Type de facturation du client</div>
+    <div class="billing-selector">
+      <button class="billing-btn active" onclick="setBilling('lisse')" id="bill-lisse">Facturation liss&eacute;e (mensualit&eacute;s)</button>
+      <button class="billing-btn" onclick="setBilling('reel')" id="bill-reel">Facturation r&eacute;elle</button>
+    </div>
+  </div>
+
+  <!-- ===== ERROR ===== -->
+  <div class="error-msg" id="error-msg"></div>
+
+  <!-- ===== TARIFS ===== -->
+  <div class="card">
+    <div class="card-title">Tarifs &agrave; comparer</div>
+
+    <!-- BASE MODE -->
+    <div id="section-base">
+      <div class="form-section-title">Prix du kWh HT</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="base-kwh-actuel">Fournisseur actuel</label>
+          <input type="text" id="base-kwh-actuel" placeholder="ex : 0,2516" inputmode="decimal">
+          <span class="hint">&Agrave; relever sur la facture du client</span>
+          <span class="unit">&euro; HT / kWh</span>
+        </div>
+        <div class="field">
+          <label for="base-kwh-alpiq">Alpiq</label>
+          <input type="text" id="base-kwh-alpiq" placeholder="ex : 0,2064" inputmode="decimal">
+          <span class="hint">Tarif Alpiq en vigueur</span>
+          <span class="unit">&euro; HT / kWh</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HCHP MODE -->
+    <div id="section-hchp" class="hidden">
+      <div class="form-section-title">Prix Heures Creuses HT</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="hc-kwh-actuel">Fournisseur actuel (HC)</label>
+          <input type="text" id="hc-kwh-actuel" placeholder="ex : 0,1900" inputmode="decimal">
+          <span class="hint">Tarif heures creuses sur la facture</span>
+          <span class="unit">&euro; HT / kWh</span>
+        </div>
+        <div class="field">
+          <label for="hc-kwh-alpiq">Alpiq (HC)</label>
+          <input type="text" id="hc-kwh-alpiq" placeholder="ex : 0,1650" inputmode="decimal">
+          <span class="unit">&euro; HT / kWh</span>
+        </div>
+      </div>
+      <div class="form-section-title">Prix Heures Pleines HT</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="hp-kwh-actuel">Fournisseur actuel (HP)</label>
+          <input type="text" id="hp-kwh-actuel" placeholder="ex : 0,2516" inputmode="decimal">
+          <span class="hint">Tarif heures pleines sur la facture</span>
+          <span class="unit">&euro; HT / kWh</span>
+        </div>
+        <div class="field">
+          <label for="hp-kwh-alpiq">Alpiq (HP)</label>
+          <input type="text" id="hp-kwh-alpiq" placeholder="ex : 0,2200" inputmode="decimal">
+          <span class="unit">&euro; HT / kWh</span>
+        </div>
+      </div>
+
+      <div class="form-section-title">Consommation du client</div>
+      <div class="conso-period">
+        <span>P&eacute;riode saisie :</span>
+        <select id="conso-period-select">
+          <option value="annuelle">Consommation annuelle</option>
+          <option value="mensuelle">Consommation mensuelle</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="conso-hc">Consommation HC</label>
+          <input type="text" id="conso-hc" placeholder="ex : 3000" inputmode="decimal">
+          <span class="unit">kWh</span>
+        </div>
+        <div class="field">
+          <label for="conso-hp">Consommation HP</label>
+          <input type="text" id="conso-hp" placeholder="ex : 5000" inputmode="decimal">
+          <span class="unit">kWh</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABONNEMENT (toujours visible) -->
+    <div class="form-section-title" style="margin-top:0.8rem">Abonnement mensuel HT</div>
+    <div class="field-row">
+      <div class="field">
+        <label for="abo-actuel">Fournisseur actuel</label>
+        <input type="text" id="abo-actuel" placeholder="ex : 12,50" inputmode="decimal">
+        <span class="hint">Montant hors taxes, visible sur la facture</span>
+        <span class="unit">&euro; HT / mois</span>
+      </div>
+      <div class="field">
+        <label for="abo-alpiq">Alpiq</label>
+        <input type="text" id="abo-alpiq" placeholder="ex : 11,00" inputmode="decimal">
+        <span class="unit">&euro; HT / mois</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SITUATION CLIENT ===== -->
+  <div class="card">
+    <div class="card-title">Situation actuelle du client</div>
+
+    <!-- LISSÉ -->
+    <div id="section-lisse">
+      <div class="field-row single">
+        <div class="field">
+          <label for="mensualite">Mensualit&eacute; actuelle moyenne du client</label>
+          <input type="text" id="mensualite" placeholder="ex : 95" inputmode="decimal">
+          <span class="hint">Montant moyen pay&eacute; chaque mois (TTC ou HT, le calcul reste une estimation)</span>
+          <span class="unit">&euro; / mois</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RÉEL -->
+    <div id="section-reel" class="hidden">
+      <div class="field-row single">
+        <div class="field">
+          <label for="depense-annuelle">D&eacute;pense annuelle estim&eacute;e du client</label>
+          <input type="text" id="depense-annuelle" placeholder="ex : 1200" inputmode="decimal">
+          <span class="hint">Total pay&eacute; sur l'ann&eacute;e (TTC ou HT, le calcul reste une estimation)</span>
+          <span class="unit">&euro; / an</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BUTTONS ===== -->
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="calculate()">Calculer</button>
+    <button class="btn btn-secondary" onclick="resetAll()">R&eacute;initialiser</button>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div class="results" id="results">
+
+    <!-- Encart principal -->
+    <div class="card" style="padding:0; overflow:hidden; border:none;">
+      <div class="result-main" id="result-main">
+        <div class="result-percent" id="result-percent"></div>
+        <div class="result-summary" id="result-summary"></div>
+      </div>
+    </div>
+
+    <!-- Euros -->
+    <div class="result-euros" id="result-euros">
+      <div class="euro-box">
+        <div class="euro-amount" id="eco-mensuel"></div>
+        <div class="euro-label" id="eco-mensuel-label">par mois</div>
+      </div>
+      <div class="euro-box">
+        <div class="euro-amount" id="eco-annuel"></div>
+        <div class="euro-label" id="eco-annuel-label">par an</div>
+      </div>
+    </div>
+
+    <!-- Détail -->
+    <div class="card">
+      <div class="card-title">D&eacute;tail de la comparaison (montants HT)</div>
+      <table class="details-table">
+        <thead>
+          <tr><th></th><th>Actuel</th><th>Alpiq</th><th>&Eacute;cart</th></tr>
+        </thead>
+        <tbody id="details-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Phrase commerciale -->
+    <div class="card">
+      <div class="commercial-box" id="commercial-box">
+        <div class="label">Phrase commerciale</div>
+        <div class="phrase" id="commercial-phrase"></div>
+      </div>
+      <div class="copy-group">
+        <button class="btn-copy" onclick="copyPhrase()">Copier la phrase commerciale</button>
+        <button class="btn-copy" onclick="copyResume()">Copier le r&eacute;sum&eacute; complet</button>
+      </div>
+    </div>
+
+    <!-- Méthode -->
+    <div class="method-note">
+      <strong>M&eacute;thode de calcul :</strong> L'&eacute;cart en % est calcul&eacute; sur le prix du kWh (ou la moyenne pond&eacute;r&eacute;e HC/HP).
+      Cet &eacute;cart est appliqu&eacute; &agrave; la part consommation de la facture du client. L'&eacute;cart d'abonnement est ajout&eacute; s&eacute;par&eacute;ment.
+      C'est une estimation commerciale &agrave; consommation &eacute;quivalente, pas un calcul comptable exact.
+    </div>
+
+    <!-- Note HT -->
+    <div class="method-note" style="border-left: 3px solid #0d47a1;">
+      <strong>Tous les montants affich&eacute;s sont en HT (hors taxes).</strong>
+      En r&eacute;alit&eacute;, les taxes et contributions (TVA, CTA, accise sur l'&eacute;lectricit&eacute;&hellip;) s'ajoutent sur la facture finale du client.
+      L'&eacute;cart en pourcentage sur le prix du kWh reste le m&ecirc;me en TTC. En revanche, les &eacute;conomies en euros seront
+      <strong>plus importantes en TTC</strong> qu'en HT, car les taxes amplifient l'&eacute;cart de prix.
+      Le % d'&eacute;cart est donc l'indicateur le plus fiable &agrave; communiquer au client.
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      Cette estimation est fournie &agrave; titre indicatif, sur la base des informations saisies et &agrave; consommation &eacute;quivalente.
+      Les montants r&eacute;els peuvent varier selon la consommation effective, les taxes et contributions en vigueur.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ===================================================================
+   ÉTAT GLOBAL
+   =================================================================== */
+let currentMode = 'base';       // 'base' ou 'hchp'
+let currentBilling = 'lisse';   // 'lisse' ou 'reel'
+
+/* ===================================================================
+   PARSING ROBUSTE : gère virgules françaises, espaces, etc.
+   =================================================================== */
+function parseNum(val) {
+  if (typeof val !== 'string') val = String(val);
+  val = val.trim().replace(/\s/g, '').replace(',', '.');
+  const n = parseFloat(val);
+  return isNaN(n) ? null : n;
+}
+
+/* ===================================================================
+   FORMATAGE
+   =================================================================== */
+function fmtEuro(n) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' \u20ac';
+}
+function fmtPct(n) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' %';
+}
+function fmtEuroSigne(n) {
+  const sign = n > 0 ? '+' : '';
+  return sign + fmtEuro(n);
+}
+
+/* ===================================================================
+   SWITCH MODE & BILLING
+   =================================================================== */
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('mode-base').classList.toggle('active', mode === 'base');
+  document.getElementById('mode-hchp').classList.toggle('active', mode === 'hchp');
+  document.getElementById('section-base').classList.toggle('hidden', mode !== 'base');
+  document.getElementById('section-hchp').classList.toggle('hidden', mode !== 'hchp');
+  hideResults();
+}
+function setBilling(type) {
+  currentBilling = type;
+  document.getElementById('bill-lisse').classList.toggle('active', type === 'lisse');
+  document.getElementById('bill-reel').classList.toggle('active', type === 'reel');
+  document.getElementById('section-lisse').classList.toggle('hidden', type !== 'lisse');
+  document.getElementById('section-reel').classList.toggle('hidden', type !== 'reel');
+  hideResults();
+}
+
+/* ===================================================================
+   HIDE / SHOW
+   =================================================================== */
+function hideResults() {
+  document.getElementById('results').classList.remove('visible');
+  document.getElementById('error-msg').classList.remove('visible');
+}
+
+/* ===================================================================
+   VALIDATION
+   =================================================================== */
+function clearErrors() {
+  document.querySelectorAll('input.error').forEach(el => el.classList.remove('error'));
+  document.getElementById('error-msg').classList.remove('visible');
+}
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+function markError(id) {
+  document.getElementById(id).classList.add('error');
+}
+
+/* ===================================================================
+   CALCUL PRINCIPAL
+   =================================================================== */
+function calculate() {
+  clearErrors();
+  hideResults();
+  let errors = [];
+
+  // Abonnement (commun)
+  const aboActuel = parseNum(document.getElementById('abo-actuel').value);
+  const aboAlpiq  = parseNum(document.getElementById('abo-alpiq').value);
+  if (aboActuel === null || aboActuel < 0) { errors.push('abo-actuel'); }
+  if (aboAlpiq === null || aboAlpiq < 0)   { errors.push('abo-alpiq'); }
+
+  let pctEcartKwh = 0;   // % négatif = Alpiq moins cher
+  let ecartAboMensuel = 0;
+  let ecartAboAnnuel = 0;
+  let detailRows = [];
+
+  if (aboActuel !== null && aboAlpiq !== null) {
+    ecartAboMensuel = aboAlpiq - aboActuel;
+    ecartAboAnnuel = ecartAboMensuel * 12;
+  }
+
+  /* ---- MODE BASE ---- */
+  if (currentMode === 'base') {
+    const kwhActuel = parseNum(document.getElementById('base-kwh-actuel').value);
+    const kwhAlpiq  = parseNum(document.getElementById('base-kwh-alpiq').value);
+    if (kwhActuel === null || kwhActuel <= 0) { errors.push('base-kwh-actuel'); }
+    if (kwhAlpiq === null || kwhAlpiq < 0)    { errors.push('base-kwh-alpiq'); }
+
+    if (errors.length === 0) {
+      pctEcartKwh = ((kwhAlpiq / kwhActuel) - 1) * 100;
+      detailRows.push(['Prix kWh HT', fmtEuro(kwhActuel) + '/kWh', fmtEuro(kwhAlpiq) + '/kWh', fmtPct(pctEcartKwh)]);
+      detailRows.push(['Abonnement mensuel HT', fmtEuro(aboActuel), fmtEuro(aboAlpiq), fmtEuroSigne(ecartAboMensuel) + '/mois']);
+    }
+  }
+
+  /* ---- MODE HC/HP ---- */
+  if (currentMode === 'hchp') {
+    const hcActuel = parseNum(document.getElementById('hc-kwh-actuel').value);
+    const hcAlpiq  = parseNum(document.getElementById('hc-kwh-alpiq').value);
+    const hpActuel = parseNum(document.getElementById('hp-kwh-actuel').value);
+    const hpAlpiq  = parseNum(document.getElementById('hp-kwh-alpiq').value);
+    let consoHC    = parseNum(document.getElementById('conso-hc').value);
+    let consoHP    = parseNum(document.getElementById('conso-hp').value);
+    const period   = document.getElementById('conso-period-select').value;
+
+    if (hcActuel === null || hcActuel <= 0) { errors.push('hc-kwh-actuel'); }
+    if (hcAlpiq === null || hcAlpiq < 0)    { errors.push('hc-kwh-alpiq'); }
+    if (hpActuel === null || hpActuel <= 0) { errors.push('hp-kwh-actuel'); }
+    if (hpAlpiq === null || hpAlpiq < 0)    { errors.push('hp-kwh-alpiq'); }
+    if (consoHC === null || consoHC < 0)    { errors.push('conso-hc'); }
+    if (consoHP === null || consoHP < 0)    { errors.push('conso-hp'); }
+
+    if (errors.length === 0) {
+      // Annualiser si mensuel
+      if (period === 'mensuelle') {
+        consoHC *= 12;
+        consoHP *= 12;
+      }
+
+      const coutActuelHC = hcActuel * consoHC;
+      const coutActuelHP = hpActuel * consoHP;
+      const coutAlpiqHC  = hcAlpiq * consoHC;
+      const coutAlpiqHP  = hpAlpiq * consoHP;
+      const coutActuelTotal = coutActuelHC + coutActuelHP;
+      const coutAlpiqTotal  = coutAlpiqHC + coutAlpiqHP;
+
+      if (coutActuelTotal > 0) {
+        pctEcartKwh = ((coutAlpiqTotal / coutActuelTotal) - 1) * 100;
+      }
+
+      detailRows.push(['Co\u00fbt HC annuel HT', fmtEuro(coutActuelHC), fmtEuro(coutAlpiqHC), fmtEuroSigne(coutAlpiqHC - coutActuelHC)]);
+      detailRows.push(['Co\u00fbt HP annuel HT', fmtEuro(coutActuelHP), fmtEuro(coutAlpiqHP), fmtEuroSigne(coutAlpiqHP - coutActuelHP)]);
+      detailRows.push(['Total conso annuel HT', fmtEuro(coutActuelTotal), fmtEuro(coutAlpiqTotal), fmtEuroSigne(coutAlpiqTotal - coutActuelTotal)]);
+      detailRows.push(['Abonnement mensuel HT', fmtEuro(aboActuel), fmtEuro(aboAlpiq), fmtEuroSigne(ecartAboMensuel) + '/mois']);
+    }
+  }
+
+  // Validation billing section
+  if (currentBilling === 'lisse') {
+    const m = parseNum(document.getElementById('mensualite').value);
+    if (m === null || m <= 0) { errors.push('mensualite'); }
+  } else {
+    const d = parseNum(document.getElementById('depense-annuelle').value);
+    if (d === null || d <= 0) { errors.push('depense-annuelle'); }
+  }
+
+  // Afficher erreurs
+  if (errors.length > 0) {
+    errors.forEach(id => markError(id));
+    showError('Merci de remplir correctement tous les champs en rouge.');
+    return;
+  }
+
+  /* ---- CALCUL DES ECONOMIES ---- */
+  let ecoAnnuelle = 0;
+  let ecoMensuelle = 0;
+
+  if (currentBilling === 'lisse') {
+    const mensualite = parseNum(document.getElementById('mensualite').value);
+
+    if (currentMode === 'base') {
+      // Part conso estimée = mensualité - abo actuel (approximation)
+      const partConso = Math.max(mensualite - aboActuel, mensualite * 0.7);
+      const ecoConsoMensuelle = partConso * (-pctEcartKwh / 100);
+      ecoMensuelle = ecoConsoMensuelle - ecartAboMensuel;
+      ecoAnnuelle = ecoMensuelle * 12;
+    } else {
+      // HCHP : on applique le % global sur la part conso
+      const partConso = Math.max(mensualite - aboActuel, mensualite * 0.7);
+      const ecoConsoMensuelle = partConso * (-pctEcartKwh / 100);
+      ecoMensuelle = ecoConsoMensuelle - ecartAboMensuel;
+      ecoAnnuelle = ecoMensuelle * 12;
+    }
+  } else {
+    const depenseAnnuelle = parseNum(document.getElementById('depense-annuelle').value);
+
+    if (currentMode === 'base') {
+      const partConsoAn = Math.max(depenseAnnuelle - (aboActuel * 12), depenseAnnuelle * 0.7);
+      const ecoConsoAn = partConsoAn * (-pctEcartKwh / 100);
+      ecoAnnuelle = ecoConsoAn - ecartAboAnnuel;
+      ecoMensuelle = ecoAnnuelle / 12;
+    } else {
+      const partConsoAn = Math.max(depenseAnnuelle - (aboActuel * 12), depenseAnnuelle * 0.7);
+      const ecoConsoAn = partConsoAn * (-pctEcartKwh / 100);
+      ecoAnnuelle = ecoConsoAn - ecartAboAnnuel;
+      ecoMensuelle = ecoAnnuelle / 12;
+    }
+  }
+
+  /* ---- AFFICHAGE ---- */
+  const mainEl = document.getElementById('result-main');
+  const pctEl = document.getElementById('result-percent');
+  const sumEl = document.getElementById('result-summary');
+
+  // Pourcentage global (basé sur kWh principalement)
+  const pctAffiche = Math.abs(pctEcartKwh);
+
+  if (ecoAnnuelle > 5) {
+    mainEl.className = 'result-main savings';
+    pctEl.textContent = '\u2212' + fmtPct(pctAffiche);
+    sumEl.textContent = 'Alpiq est estim\u00e9 environ ' + fmtPct(pctAffiche) + ' moins cher sur le prix du kWh HT';
+  } else if (ecoAnnuelle < -5) {
+    mainEl.className = 'result-main surcharge';
+    pctEl.textContent = '+' + fmtPct(pctAffiche);
+    sumEl.textContent = 'Alpiq est estim\u00e9 environ ' + fmtPct(pctAffiche) + ' plus cher sur le prix du kWh HT';
+  } else {
+    mainEl.className = 'result-main neutral';
+    pctEl.textContent = '\u2248 ' + fmtPct(pctAffiche);
+    sumEl.textContent = 'L\'\u00e9cart est tr\u00e8s faible entre les deux offres';
+  }
+
+  // Euros
+  const ecoMEl = document.getElementById('eco-mensuel');
+  const ecoAEl = document.getElementById('eco-annuel');
+  const ecoMLbl = document.getElementById('eco-mensuel-label');
+  const ecoALbl = document.getElementById('eco-annuel-label');
+
+  if (ecoAnnuelle >= 0) {
+    ecoMEl.textContent = fmtEuro(Math.abs(ecoMensuelle));
+    ecoAEl.textContent = fmtEuro(Math.abs(ecoAnnuelle));
+    ecoMLbl.textContent = 'd\'\u00e9conomie HT / mois';
+    ecoALbl.textContent = 'd\'\u00e9conomie HT / an';
+    ecoMEl.style.color = '#059669';
+    ecoAEl.style.color = '#059669';
+  } else {
+    ecoMEl.textContent = fmtEuro(Math.abs(ecoMensuelle));
+    ecoAEl.textContent = fmtEuro(Math.abs(ecoAnnuelle));
+    ecoMLbl.textContent = 'de surco\u00fbt HT / mois';
+    ecoALbl.textContent = 'de surco\u00fbt HT / an';
+    ecoMEl.style.color = '#dc2626';
+    ecoAEl.style.color = '#dc2626';
+  }
+
+  // Tableau détail
+  const tbody = document.getElementById('details-body');
+  tbody.innerHTML = '';
+  detailRows.forEach(row => {
+    const tr = document.createElement('tr');
+    row.forEach(cell => {
+      const td = document.createElement('td');
+      td.textContent = cell;
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  // Phrase commerciale
+  generatePhrase(ecoMensuelle, ecoAnnuelle, pctAffiche);
+
+  // Show
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ===================================================================
+   PHRASE COMMERCIALE
+   =================================================================== */
+function generatePhrase(ecoMensuelle, ecoAnnuelle, pctAffiche) {
+  const el = document.getElementById('commercial-phrase');
+  const ecoM = Math.round(Math.abs(ecoMensuelle));
+  const ecoA = Math.round(Math.abs(ecoAnnuelle));
+
+  if (ecoAnnuelle > 50) {
+    // Bonne économie
+    if (currentBilling === 'lisse') {
+      el.textContent = 'Au vu des \u00e9l\u00e9ments de votre facture actuelle, l\'offre Alpiq repr\u00e9senterait environ '
+        + ecoM + ' \u20ac HT d\'\u00e9conomie par mois, soit pr\u00e8s de ' + ecoA + ' \u20ac HT sur un an, \u00e0 consommation \u00e9quivalente. '
+        + 'En TTC, l\'\u00e9conomie r\u00e9elle serait encore plus importante.';
+    } else {
+      el.textContent = 'Sur la base de votre d\u00e9pense actuelle, passer chez Alpiq repr\u00e9senterait environ '
+        + ecoA + ' \u20ac HT d\'\u00e9conomie par an, soit l\'\u00e9quivalent d\'environ ' + ecoM + ' \u20ac HT par mois en moyenne. '
+        + 'En TTC, l\'\u00e9conomie r\u00e9elle serait encore plus importante.';
+    }
+  } else if (ecoAnnuelle > 5) {
+    // Faible économie
+    el.textContent = 'L\'\u00e9cart reste mod\u00e9r\u00e9, mais Alpiq permettrait tout de m\u00eame une \u00e9conomie estim\u00e9e d\'environ '
+      + ecoM + ' \u20ac HT par mois, soit environ ' + ecoA + ' \u20ac HT par an \u00e0 consommation \u00e9quivalente.';
+  } else if (ecoAnnuelle >= -5) {
+    // Neutre
+    el.textContent = 'Sur la base des informations saisies, les deux offres sont tr\u00e8s proches. '
+      + 'L\'\u00e9cart est n\u00e9gligeable. Il peut \u00eatre int\u00e9ressant de comparer les services et engagements associ\u00e9s.';
+  } else {
+    // Alpiq plus cher
+    el.textContent = 'Sur la base des informations saisies, l\'offre Alpiq ressort ici l\u00e9g\u00e8rement plus ch\u00e8re que le contrat actuel. '
+      + 'Il faut donc rev\u00e9rifier les tarifs saisis et la base de comparaison.';
+  }
+}
+
+/* ===================================================================
+   COPIER
+   =================================================================== */
+function copyPhrase() {
+  const text = document.getElementById('commercial-phrase').textContent;
+  copyToClipboard(text, event.target);
+}
+function copyResume() {
+  // Construire un résumé texte
+  const pct = document.getElementById('result-percent').textContent;
+  const summary = document.getElementById('result-summary').textContent;
+  const ecoM = document.getElementById('eco-mensuel').textContent + ' ' + document.getElementById('eco-mensuel-label').textContent;
+  const ecoA = document.getElementById('eco-annuel').textContent + ' ' + document.getElementById('eco-annuel-label').textContent;
+  const phrase = document.getElementById('commercial-phrase').textContent;
+  const mode = currentMode === 'base' ? 'Tarif Base' : 'HC/HP';
+
+  const resume = '=== Comparaison Alpiq (' + mode + ') ===\n'
+    + pct + ' \u2014 ' + summary + '\n'
+    + ecoM + ' | ' + ecoA + '\n\n'
+    + phrase + '\n\n'
+    + 'Estimation indicative HT, \u00e0 consommation \u00e9quivalente. En TTC, les \u00e9conomies seraient encore plus importantes.';
+
+  copyToClipboard(resume, event.target);
+}
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    const orig = btn.textContent;
+    btn.textContent = '\u2713 Copi\u00e9 !';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = orig;
+    }, 2000);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    const orig = btn.textContent;
+    btn.textContent = '\u2713 Copi\u00e9 !';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = orig;
+    }, 2000);
+  });
+}
+
+/* ===================================================================
+   RESET
+   =================================================================== */
+function resetAll() {
+  document.querySelectorAll('input[type="text"]').forEach(el => {
+    el.value = '';
+    el.classList.remove('error');
+  });
+  hideResults();
+}
+
+/* ===================================================================
+   ENTER KEY
+   =================================================================== */
+document.querySelectorAll('input').forEach(input => {
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') calculate();
+  });
+});
+</script>
+
+</body>
+</html>

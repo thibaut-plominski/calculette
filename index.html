@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculette d'économies - Alpiq</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f0f4f8;
+    color: #1a202c;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+    color: #0d47a1;
+  }
+  .subtitle {
+    color: #64748b;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+  .container {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+    width: 100%;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    flex: 1;
+    min-width: 280px;
+    max-width: 400px;
+  }
+  .card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .card.current h2 { border-color: #ef4444; color: #ef4444; }
+  .card.alpiq h2 { border-color: #0d47a1; color: #0d47a1; }
+  .field {
+    margin-bottom: 1rem;
+  }
+  .field label {
+    display: block;
+    font-size: 0.85rem;
+    color: #475569;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: #fff;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: #0d47a1;
+    box-shadow: 0 0 0 3px rgba(13,71,161,0.1);
+  }
+  .unit {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.15rem;
+  }
+  .conso-section {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 1.2rem;
+    margin: 1.5rem 0;
+    max-width: 400px;
+    width: 100%;
+  }
+  .conso-section h3 {
+    font-size: 0.95rem;
+    color: #334155;
+    margin-bottom: 0.8rem;
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    padding: 0.85rem;
+    background: #0d47a1;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+  .btn:hover { background: #1565c0; }
+  .btn:active { transform: scale(0.98); }
+
+  /* Results */
+  .results {
+    margin-top: 2rem;
+    max-width: 820px;
+    width: 100%;
+    display: none;
+  }
+  .results.visible { display: block; }
+  .results-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.8rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+  .results h2 {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #0d47a1;
+  }
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+  .comparison-table th, .comparison-table td {
+    padding: 0.7rem 1rem;
+    text-align: right;
+    font-size: 0.92rem;
+  }
+  .comparison-table th:first-child, .comparison-table td:first-child {
+    text-align: left;
+    color: #475569;
+  }
+  .comparison-table thead th {
+    border-bottom: 2px solid #e2e8f0;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .comparison-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .comparison-table tbody tr:last-child {
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .col-current { color: #ef4444; }
+  .col-alpiq { color: #0d47a1; }
+
+  .savings-box {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 10px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+  .savings-box.negative {
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+  .savings-amount {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #16a34a;
+  }
+  .savings-box.negative .savings-amount {
+    color: #dc2626;
+  }
+  .savings-label {
+    font-size: 0.9rem;
+    color: #475569;
+    margin-top: 0.3rem;
+  }
+  .savings-percent {
+    font-size: 1rem;
+    color: #16a34a;
+    font-weight: 600;
+    margin-top: 0.3rem;
+  }
+  .savings-box.negative .savings-percent {
+    color: #dc2626;
+  }
+
+  /* Bar chart */
+  .bar-chart {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2.5rem;
+    margin: 1.5rem 0;
+    height: 180px;
+  }
+  .bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .bar {
+    width: 70px;
+    border-radius: 6px 6px 0 0;
+    transition: height 0.5s ease;
+    min-height: 4px;
+  }
+  .bar.current { background: #ef4444; }
+  .bar.alpiq { background: #0d47a1; }
+  .bar-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+  .bar-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 640px) {
+    .container { flex-direction: column; align-items: center; }
+    .card { max-width: 100%; }
+    .conso-section { max-width: 100%; }
+    .btn { max-width: 100%; }
+    h1 { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Calculette d'économies</h1>
+<p class="subtitle">Comparez votre tarif actuel avec l'offre Alpiq</p>
+
+<div class="container">
+  <!-- Fournisseur actuel -->
+  <div class="card current">
+    <h2>Fournisseur actuel</h2>
+    <div class="field">
+      <label for="cur-abo">Abonnement</label>
+      <input type="number" id="cur-abo" step="0.01" min="0" placeholder="ex: 12.50">
+      <div class="unit">€ TTC / mois</div>
+    </div>
+    <div class="field">
+      <label for="cur-kwh">Prix du kWh</label>
+      <input type="number" id="cur-kwh" step="0.0001" min="0" placeholder="ex: 0.2516">
+      <div class="unit">€ TTC / kWh</div>
+    </div>
+  </div>
+
+  <!-- Offre Alpiq -->
+  <div class="card alpiq">
+    <h2>Offre Alpiq</h2>
+    <div class="field">
+      <label for="alp-abo">Abonnement</label>
+      <input type="number" id="alp-abo" step="0.01" min="0" placeholder="ex: 11.00">
+      <div class="unit">€ TTC / mois</div>
+    </div>
+    <div class="field">
+      <label for="alp-kwh">Prix du kWh</label>
+      <input type="number" id="alp-kwh" step="0.0001" min="0" placeholder="ex: 0.2064">
+      <div class="unit">€ TTC / kWh</div>
+    </div>
+  </div>
+</div>
+
+<!-- Consommation -->
+<div class="conso-section">
+  <h3>Consommation estimée</h3>
+  <div class="field">
+    <label for="conso">Consommation annuelle</label>
+    <input type="number" id="conso" step="1" min="0" placeholder="ex: 5000" value="">
+    <div class="unit">kWh / an</div>
+  </div>
+</div>
+
+<button class="btn" onclick="calculate()">Calculer mes économies</button>
+
+<!-- Résultats -->
+<div class="results" id="results">
+  <div class="results-card">
+    <h2>Résultat de la comparaison</h2>
+
+    <div class="bar-chart">
+      <div class="bar-group">
+        <div class="bar-value col-current" id="bar-cur-val"></div>
+        <div class="bar current" id="bar-cur"></div>
+        <div class="bar-label">Actuel</div>
+      </div>
+      <div class="bar-group">
+        <div class="bar-value col-alpiq" id="bar-alp-val"></div>
+        <div class="bar alpiq" id="bar-alp"></div>
+        <div class="bar-label">Alpiq</div>
+      </div>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="col-current">Actuel</th>
+          <th class="col-alpiq">Alpiq</th>
+          <th>Différence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Abonnement / an</td>
+          <td id="r-cur-abo"></td>
+          <td id="r-alp-abo"></td>
+          <td id="r-diff-abo"></td>
+        </tr>
+        <tr>
+          <td>Consommation / an</td>
+          <td id="r-cur-conso"></td>
+          <td id="r-alp-conso"></td>
+          <td id="r-diff-conso"></td>
+        </tr>
+        <tr style="font-weight:700;">
+          <td>Total annuel TTC</td>
+          <td id="r-cur-total" class="col-current"></td>
+          <td id="r-alp-total" class="col-alpiq"></td>
+          <td id="r-diff-total"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="savings-box" id="savings-box">
+      <div class="savings-amount" id="savings-amount"></div>
+      <div class="savings-label" id="savings-label"></div>
+      <div class="savings-percent" id="savings-percent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+function fmtDiff(n) {
+  const sign = n > 0 ? '+' : '';
+  return sign + n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+
+function calculate() {
+  const curAbo = parseFloat(document.getElementById('cur-abo').value);
+  const curKwh = parseFloat(document.getElementById('cur-kwh').value);
+  const alpAbo = parseFloat(document.getElementById('alp-abo').value);
+  const alpKwh = parseFloat(document.getElementById('alp-kwh').value);
+  const conso  = parseFloat(document.getElementById('conso').value);
+
+  if ([curAbo, curKwh, alpAbo, alpKwh, conso].some(v => isNaN(v) || v < 0)) {
+    alert('Merci de remplir tous les champs avec des valeurs valides.');
+    return;
+  }
+
+  const curAboAn   = curAbo * 12;
+  const alpAboAn   = alpAbo * 12;
+  const curConsoAn = curKwh * conso;
+  const alpConsoAn = alpKwh * conso;
+  const curTotal   = curAboAn + curConsoAn;
+  const alpTotal   = alpAboAn + alpConsoAn;
+  const savings    = curTotal - alpTotal;
+  const pct        = curTotal > 0 ? (savings / curTotal) * 100 : 0;
+
+  // Table
+  document.getElementById('r-cur-abo').textContent     = fmt(curAboAn);
+  document.getElementById('r-alp-abo').textContent     = fmt(alpAboAn);
+  document.getElementById('r-diff-abo').textContent    = fmtDiff(alpAboAn - curAboAn);
+  document.getElementById('r-cur-conso').textContent   = fmt(curConsoAn);
+  document.getElementById('r-alp-conso').textContent   = fmt(alpConsoAn);
+  document.getElementById('r-diff-conso').textContent  = fmtDiff(alpConsoAn - curConsoAn);
+  document.getElementById('r-cur-total').textContent   = fmt(curTotal);
+  document.getElementById('r-alp-total').textContent   = fmt(alpTotal);
+  document.getElementById('r-diff-total').textContent  = fmtDiff(alpTotal - curTotal);
+
+  // Bars
+  const maxVal = Math.max(curTotal, alpTotal, 1);
+  document.getElementById('bar-cur').style.height = (curTotal / maxVal * 150) + 'px';
+  document.getElementById('bar-alp').style.height = (alpTotal / maxVal * 150) + 'px';
+  document.getElementById('bar-cur-val').textContent = fmt(curTotal);
+  document.getElementById('bar-alp-val').textContent = fmt(alpTotal);
+
+  // Savings box
+  const box = document.getElementById('savings-box');
+  const amountEl = document.getElementById('savings-amount');
+  const labelEl = document.getElementById('savings-label');
+  const pctEl = document.getElementById('savings-percent');
+
+  if (savings > 0) {
+    box.className = 'savings-box';
+    amountEl.textContent = fmt(savings);
+    labelEl.textContent = "d'économies par an en passant chez Alpiq";
+    pctEl.textContent = 'soit ' + Math.abs(pct).toFixed(1).replace('.', ',') + ' % de réduction';
+  } else if (savings < 0) {
+    box.className = 'savings-box negative';
+    amountEl.textContent = '+' + fmt(Math.abs(savings));
+    labelEl.textContent = "de surcoût par an avec Alpiq";
+    pctEl.textContent = 'soit ' + Math.abs(pct).toFixed(1).replace('.', ',') + ' % plus cher';
+  } else {
+    box.className = 'savings-box';
+    amountEl.textContent = '0,00 €';
+    labelEl.textContent = 'Tarifs identiques';
+    pctEl.textContent = '';
+  }
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Allow Enter key to trigger calculation
+document.querySelectorAll('input').forEach(input => {
+  input.addEventListener('keypress', e => {
+    if (e.key === 'Enter') calculate();
+  });
+});
+</script>
+
+</body>
+</html>
